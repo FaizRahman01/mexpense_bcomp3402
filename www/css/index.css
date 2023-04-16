@@ -2,7 +2,7 @@
     background-color: #181D31;
 }
 
-.add-trip-app {
+.main-btn-app {
     background-color: #678983;
     color: white;
     padding: 14px 25px;
@@ -33,11 +33,16 @@ a:visited {
     text-decoration: none;
 }
 
-.add-trip-app:hover {
+.main-btn-app:hover {
     background-color: #42ad9a;
 }
 
 .btn-app {
+    border: none;
+    text-decoration: none;
+}
+
+.hidden-btn-app {
     border: none;
     text-decoration: none;
     padding: 0;
