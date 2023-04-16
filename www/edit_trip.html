@@ -92,7 +92,7 @@
                     <div class="col-7 container text-sm-end text-center">
                         <div class="row align-items-center">
                             <div class="col my-4">
-                                <button type="button" data-bs-toggle="modal" data-bs-target="#AddExpensesModal"
+                                <button type="button" data-bs-toggle="modal" data-bs-target="#EditExpensesModal"
                                 data-bs-whatever="@mdo" class="main-btn-app rounded-4 btn-app">
                                     <span>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
@@ -232,6 +232,48 @@
             </div>
         </div>
     </div>
+
+        <!-- modal Edit Expenses-->
+
+        <div class="modal fade" id="EditExpensesModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Add Expenses</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form class="needs-validation">
+                            <!-- trip id to edit -->
+                            <input type="hidden" name="secret_token" value="12345">
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Type of expenses</span>
+                                <input id="trip-title-text" type="text" class="form-control" aria-label=""
+                                    placeholder="Food" aria-describedby="">
+                            </div>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Amount of the expenses</span>
+                                <input id="destination-text" type="text" pattern="[0-9]*" inputmode="numeric"
+                                    class="form-control" aria-label="" placeholder="Total money spent(US Dollar $)"
+                                    aria-describedby="">
+                            </div>
+                            <div class="input-group">
+                                <span class="input-group-text">Additional Comment</span>
+                                <textarea id="desc-text" class="form-control" aria-label="With textarea"></textarea>
+                            </div>
+    
+                            <div class="col-12 my-3">
+                                <button class="btn btn-primary w-100 fw-light" id="add-user-trip" type="submit">Add</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
 
     <script src="cordova.js"></script>
     <script src="js/index.js"></script>
