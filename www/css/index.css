@@ -1,0 +1,50 @@
+.navbar-bg-app {
+    background-color: #181D31;
+}
+
+.add-trip-app {
+    background-color: #678983;
+    color: white;
+    padding: 14px 25px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.card-trip-app:hover {
+    background-color: #c0c5c4;
+}
+
+.see-more-app {
+    color: white;
+}
+
+.see-more-parent-app {
+    background-color: #181D31;
+}
+
+.see-more-parent-app:hover {
+    border-radius: 50;
+    background-color: #2b2e3b;
+}
+
+a:link,
+a:visited {
+    text-decoration: none;
+}
+
+.add-trip-app:hover {
+    background-color: #42ad9a;
+}
+
+.btn-app {
+    border: none;
+    text-decoration: none;
+    padding: 0;
+}
+
+@media (max-width: 520px) {
+    .text-app {
+        text-align: center;
+    }
+}

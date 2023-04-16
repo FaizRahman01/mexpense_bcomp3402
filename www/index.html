@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta charset="utf-8">
+
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self' data: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+    <meta name="color-scheme" content="light dark">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/index.css">
+
+    <title>M-Expense</title>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-bg-app bg-gradient sticky-top">
+        <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1 text-white">M-Expense</span>
+        </div>
+    </nav>
+
+    <div class="card my-2 mx-3">
+        <div class="card-body">
+            <div class="container">
+                <div class="row">
+
+                    <div class="col-12 container text-center">
+                        <div class="row align-items-center">
+                            <div class="col my-4">
+                                <a type="button" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                                    data-bs-whatever="@mdo" class="add-trip-app rounded-4  w-100">
+                                    
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
+                                        <path fill="#e6ebeb" d="M17 19.22H5V7h7V5H3v16h16v-9h-2z"/><path fill="currentColor" d="M19 2h-2v3h-3c.01.01 0 2 0 2h3v2.99c.01.01 2 0 2 0V7h3V5h-3V2zM7 9h8v2H7zm0 3v2h8v-2h-3zm0 3h8v2H7z"/>
+                                    </svg>
+                                    <span>
+                                        Add Trip
+                                    </span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card card-trip-app mx-3 my-4 position-relative">
+        <div class="card-header">
+            <span>Trip Name</span>
+        </div>
+        <div class="card-body">
+            <blockquote class="blockquote mb-0">
+                <p>Destination: KL, Malaysia</p>
+                <footer class="blockquote-footer">Date Start: 12 Apr 23</footer>
+            </blockquote>
+            <a href="#" class="stretched-link"></a>
+        </div>
+    </div>
+
+    <div class="card card-trip-app mx-3 my-4 position-relative">
+        <div class="card-header">
+            <span>Trip Name</span>
+        </div>
+        <div class="card-body">
+            <blockquote class="blockquote mb-0">
+                <p>Destination: Johor, Malaysia</p>
+                <footer class="blockquote-footer">Date Start: 12 Apr 23</footer>
+            </blockquote>
+            <a href="#" class="stretched-link"></a>
+        </div>
+    </div>
+
+    <div class="container mb-5">
+        <div class="row text-center position-relative see-more-parent-app mx-1 p-3 rounded-4">
+            <div class="col-12">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
+                    <path fill="#e6ebeb" d="M11 7h6v2h-6zm0 4h6v2h-6zm0 4h6v2h-6zM7 7h2v2H7zm0 4h2v2H7zm0 4h2v2H7zM20.1 3H3.9c-.5 0-.9.4-.9.9v16.2c0 .4.4.9.9.9h16.2c.4 0 .9-.5.9-.9V3.9c0-.5-.5-.9-.9-.9zM19 19H5V5h14v14z"/>
+                </svg>
+            </div>
+            <div class="col-12">
+                <a href="trip_list.html" class="see-more-app stretched-link">See More</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- modal -->
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Add New Trip</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="needs-validation">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">Trip Title</span>
+                            <input id="trip-title-text" type="text" class="form-control" aria-label="" placeholder="Meeting"
+                                aria-describedby="">
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">Destination</span>
+                            <input id="destination-text" type="text" class="form-control" aria-label="" placeholder="London"
+                                aria-describedby="">
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">Date Start</span>
+                            <input id="date-start-text" type="date" class="form-control" aria-label=""
+                                aria-describedby="">
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">Risk Assesment</span>
+                            <input id="risk-yes-text" type="radio" value="Yes" class="btn-check" name="riskoptions" autocomplete="off"
+                                required>
+                            <label class="btn btn-outline-success" for="risk-yes-text">Yes</label>
+
+                            <input id="risk-no-text" type="radio" value="No" class="btn-check" name="riskoptions" autocomplete="off"
+                                required>
+                            <label class="btn btn-outline-danger" for="risk-no-text">No</label>
+                        </div>
+
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">Emergency Contact</span>
+                            <input id="emergency-contact-text" type="tel" class="form-control" aria-label=""
+                                placeholder="10 or 11 digit contact number" aria-describedby=""
+                                pattern="[0-9]{10,11}" required>
+                        </div>
+
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">Contact Relationship</span>
+                            <input id="contact-relationship-text" type="text" class="form-control" aria-label="" placeholder="Cousin"
+                                aria-describedby="">
+                        </div>
+
+                        <div class="input-group">
+                            <span class="input-group-text">Description</span>
+                            <textarea id="desc-text" class="form-control" aria-label="With textarea"></textarea>
+                        </div>
+
+                        <div class="col-12 my-3">
+                            <button class="btn btn-primary w-100 fw-light" id="add-user-trip" type="submit">Confirm</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="cordova.js"></script>
+    <script src="js/index.js"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/zepto.min.js"></script>
+</body>
+
+</html>
