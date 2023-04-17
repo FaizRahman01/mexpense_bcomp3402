@@ -200,7 +200,6 @@
                 <div class="modal-body">
                     <form class="needs-validation">
                         <!-- trip id to edit -->
-                        <input type="hidden" name="secret_token" value="12345">
                         <div class="input-group mb-3">
                             <span class="input-group-text">Type of expenses</span>
                             <input id="" type="text" class="form-control" aria-label=""
@@ -211,6 +210,11 @@
                             <input id="" type="text" pattern="[0-9]*" inputmode="numeric"
                                 class="form-control" aria-label="" placeholder="100"
                                 aria-describedby="">
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">Current Date and Time</span>
+                            <input id="add-expensesdatetime" type="text" class="form-control" aria-label=""
+                                placeholder="Date and Time" aria-describedby="" readonly>
                         </div>
                         <div class="input-group">
                             <span class="input-group-text">Additional Comment</span>
@@ -253,6 +257,11 @@
                             <input id="" type="text" pattern="[0-9]*" inputmode="numeric"
                                 class="form-control" aria-label="" placeholder="100"
                                 aria-describedby="">
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">Current Date and Time</span>
+                            <input id="edit-expensesdatetime" type="text" class="form-control" aria-label=""
+                                placeholder="Date and Time" aria-describedby="" readonly>
                         </div>
                         <div class="input-group">
                             <span class="input-group-text">Additional Comment</span>

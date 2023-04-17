@@ -9,7 +9,13 @@ const SQL_SELECT_TWO_TRIP = 'SELECT trip_id, trip_title,destination_name,trip_st
 const SQL_RESET_USER_ID = 'DELETE FROM sqlite_sequence WHERE name=`user_trip`'
 const SQL_SELECT_ONE_TRIP = 'SELECT trip_title,destination_name,trip_start_date, risk_assessment_trip, emergency_contact, contactnum_relationship, trip_desc FROM user_trip WHERE trip_id=?';
 const SQL_DELETE_ONE_TRIP = 'DELETE FROM user_trip WHERE trip_id = ?'
-const SQL_UDDATE_ONE_TRIP = 'UPDATE user_trip SET trip_title=?, destination_name=?, trip_start_date=?, risk_assessment_trip=?, emergency_contact=?, contactnum_relationship=?, trip_desc=? WHERE trip_id=?'
+const SQL_UPDATE_ONE_TRIP = 'UPDATE user_trip SET trip_title=?, destination_name=?, trip_start_date=?, risk_assessment_trip=?, emergency_contact=?, contactnum_relationship=?, trip_desc=? WHERE trip_id=?'
+
+const SQL_CREATE_EXPENSES_DETAIL = 'CREATE TABLE IF NOT EXISTS user_trip(trip_id INTEGER PRIMARY KEY AUTOINCREMENT, trip_title TEXT NOT NULL, destination_name TEXT NOT NULL, trip_start_date DATE NOT NULL, risk_assessment_trip NOT NULL, emergency_contact TEXT, contactnum_relationship TEXT, trip_desc TEXT)';
+const SQL_INSERT_NEW_EXPENSES = 'INSERT INTO user_trip(trip_title, destination_name, trip_start_date, risk_assessment_trip, emergency_contact, contactnum_relationship, trip_desc) VALUES (?, ?, ?, ?, ?, ?, ?)'
+const SQL_SELECT_ALL_EXPENSES = 'SELECT trip_id,trip_title,destination_name,trip_start_date FROM user_trip ORDER BY trip_title ASC';
+const SQL_DELETE_ONE_EXPENSES = 'DELETE FROM user_trip WHERE trip_id = ?'
+
 
 
 function onSaveNewTripClicked() {
@@ -180,7 +186,7 @@ function onUpdateTrip() {
   db.transaction(
     function (tx) {
       tx.executeSql(
-        SQL_UDDATE_ONE_TRIP,
+        SQL_UPDATE_ONE_TRIP,
         [edit_title, edit_destination, edit_start_date, edit_risk_assessment, edit_emergency_contact, edit_contactnum_relationship, edit_desc, trip_id_get],
         function (tx, result) { //clear ui
           onShowAllTrip()
@@ -299,7 +305,7 @@ function onShowTwoTrip() {
               var card = $('<div>', {
                 'class': 'card card-trip-app mx-3 my-4 position-relative'
               });
-  
+
               // Create the card header element and add it to the card
               var cardHeader = $('<div>', {
                 'class': 'card-header'
@@ -310,13 +316,13 @@ function onShowTwoTrip() {
                   'value': `${result.rows.item(index).trip_id}`
                 }));
               card.append(cardHeader);
-  
+
               // Create the card body element and add it to the card
               var cardBody = $('<div>', {
                 'class': 'card-body'
               });
               card.append(cardBody);
-  
+
               // Create the blockquote element and add it to the card body
               var blockquote = $('<blockquote>', {
                 'class': 'blockquote mb-0'
@@ -325,7 +331,7 @@ function onShowTwoTrip() {
                   'class': 'blockquote-footer'
                 }).text(`Date Start: ${result.rows.item(index).trip_start_date}`));
               cardBody.append(blockquote);
-  
+
               // Create the link element and add its to the card body
               var button = $('<button>', {
                 'class': 'stretched-link hidden-btn-app'
@@ -333,7 +339,7 @@ function onShowTwoTrip() {
                 sessionStorage.setItem('tripid', `${result.rows.item(index).trip_id}`);
                 window.open("edit_trip.html");
               });
-  
+
               cardBody.append(button);
 
               // Append the card to the card container element
@@ -466,6 +472,29 @@ document.addEventListener('deviceready', function () {
 
                 // Set the value of the input element with ID "get_id"
                 $("#get_trip_id").val(sessionValue);
+                
+                $('#add-expensesdatetime').on('click', function() {
+                  // Get the current date and time
+                  var now = new Date();
+                
+                  // Format the date and time
+                  var dateString = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate();
+                  var timeString = now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds();
+                
+                  // Set the value of the input element to the date and time
+                  $('#add-expensesdatetime').val(dateString + ' ' + timeString);
+                });
+                $('#edit-expensesdatetime').on('click', function() {
+                  // Get the current date and time
+                  var now = new Date();
+                
+                  // Format the date and time
+                  var dateString = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate();
+                  var timeString = now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds();
+                
+                  // Set the value of the input element to the date and time
+                  $('#edit-expensesdatetime').val(dateString + ' ' + timeString);
+                });
               }, // SUCCESS callback
               function (tx, error) {
                 isDbReady = false
