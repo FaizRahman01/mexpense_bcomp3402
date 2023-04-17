@@ -5,6 +5,7 @@ const SQL_CREATE_TRIP_DETAIL = 'CREATE TABLE IF NOT EXISTS user_trip(trip_id INT
 const SQL_INSERT_NEW_TRIP = 'INSERT INTO user_trip(trip_title, destination_name, trip_start_date, risk_assessment_trip, emergency_contact, contactnum_relationship, trip_desc) VALUES (?, ?, ?, ?, ?, ?, ?)'
 const SQL_SELECT_ALL_TRIP = 'SELECT trip_id,trip_title,destination_name,trip_start_date FROM user_trip ORDER BY trip_title ASC';
 const SQL_DELETE_ALL_TRIP = 'DELETE FROM user_trip'
+const SQL_SELECT_TWO_TRIP = 'SELECT trip_id, trip_title,destination_name,trip_start_date FROM user_trip ORDER BY trip_start_date ASC LIMIT 2'
 const SQL_RESET_USER_ID = 'DELETE FROM sqlite_sequence WHERE name=`user_trip`'
 const SQL_SELECT_ONE_TRIP = 'SELECT trip_title,destination_name,trip_start_date, risk_assessment_trip, emergency_contact, contactnum_relationship, trip_desc FROM user_trip WHERE trip_id=?';
 const SQL_DELETE_ONE_TRIP = 'DELETE FROM user_trip WHERE trip_id = ?'
@@ -281,7 +282,158 @@ function onDeleteAllTrip() {
 }
 
 
+function onShowTwoTrip() {
+  if (!isDbReady) {
+    showError('Database not ready. Please try again later.')
+    return
+  }
 
+  db.transaction(
+    function (tx) {
+      tx.executeSql(
+        SQL_SELECT_TWO_TRIP,
+        [],
+        function (tx, result) {
+          if (result.rows.length > 0) {
+            for (let index = 0; index < result.rows.length; index++) {
+              var card = $('<div>', {
+                'class': 'card card-trip-app mx-3 my-4 position-relative'
+              });
+  
+              // Create the card header element and add it to the card
+              var cardHeader = $('<div>', {
+                'class': 'card-header'
+              }).append($('<span>').text(`${result.rows.item(index).trip_title}`))
+                .append($('<input>', {
+                  'type': 'hidden',
+                  'id': 'test',
+                  'value': `${result.rows.item(index).trip_id}`
+                }));
+              card.append(cardHeader);
+  
+              // Create the card body element and add it to the card
+              var cardBody = $('<div>', {
+                'class': 'card-body'
+              });
+              card.append(cardBody);
+  
+              // Create the blockquote element and add it to the card body
+              var blockquote = $('<blockquote>', {
+                'class': 'blockquote mb-0'
+              }).append($('<p>').text(`Destination: ${result.rows.item(index).destination_name}`))
+                .append($('<footer>', {
+                  'class': 'blockquote-footer'
+                }).text(`Date Start: ${result.rows.item(index).trip_start_date}`));
+              cardBody.append(blockquote);
+  
+              // Create the link element and add its to the card body
+              var button = $('<button>', {
+                'class': 'stretched-link hidden-btn-app'
+              }).on('click', function () {
+                sessionStorage.setItem('tripid', `${result.rows.item(index).trip_id}`);
+                window.open("edit_trip.html");
+              });
+  
+              cardBody.append(button);
+
+              // Append the card to the card container element
+              $('#cardTwoContainer').append(card);
+            }
+            var card = $('<div>', {
+              'class': 'card card-trip-app mx-3 my-4 position-relative'
+            });
+
+            // Create the card header element and add it to the card
+            var cardHeader = $('<div>', {
+              'class': 'card-header'
+            }).append($('<span>').text(`${result.rows.item(index).trip_title}`))
+              .append($('<input>', {
+                'type': 'hidden',
+                'id': 'test',
+                'value': `${result.rows.item(index).trip_id}`
+              }));
+            card.append(cardHeader);
+
+            // Create the card body element and add it to the card
+            var cardBody = $('<div>', {
+              'class': 'card-body'
+            });
+            card.append(cardBody);
+
+            // Create the blockquote element and add it to the card body
+            var blockquote = $('<blockquote>', {
+              'class': 'blockquote mb-0'
+            }).append($('<p>').text(`Destination: ${result.rows.item(index).destination_name}`))
+              .append($('<footer>', {
+                'class': 'blockquote-footer'
+              }).text(`Date Start: ${result.rows.item(index).trip_start_date}`));
+            cardBody.append(blockquote);
+
+            // Create the link element and add its to the card body
+            var button = $('<button>', {
+              'class': 'stretched-link hidden-btn-app'
+            }).on('click', function () {
+              sessionStorage.setItem('tripid', `${result.rows.item(index).trip_id}`);
+              window.open("edit_trip.html");
+            });
+
+            cardBody.append(button);
+
+            // Append the card to the card container element
+            $('#cardTwoContainer').append(card);
+          }
+          else {
+            var card = $('<div>', {
+              'class': 'card card-trip-app mx-3 my-4 position-relative'
+            });
+
+            // Create the card header element and add it to the card
+            var cardHeader = $('<div>', {
+              'class': 'card-header'
+            }).append($('<span>').text(`No Trip Added`))
+              .append($('<input>', {
+                'type': 'hidden',
+                'id': 'notfound',
+                'value': `-`
+              }));
+            card.append(cardHeader);
+
+            // Create the card body element and add it to the card
+            var cardBody = $('<div>', {
+              'class': 'card-body'
+            });
+            card.append(cardBody);
+
+            // Create the blockquote element and add it to the card body
+            var blockquote = $('<blockquote>', {
+              'class': 'blockquote mb-0'
+            }).append($('<p>').text(`Destination: -`))
+              .append($('<footer>', {
+                'class': 'blockquote-footer'
+              }).text(`Date Start: -`));
+            cardBody.append(blockquote);
+
+            // Create the link element and add its to the card body
+            var button = $('<button>', {
+              'class': 'stretched-link hidden-btn-app'
+            }).on('click', function () {
+              sessionStorage.setItem('tripid', `-`);
+              window.open("edit_trip.html");
+            });
+
+            cardBody.append(button);
+
+            // Append the card to the card container element
+            $('#cardTwoContainer').append(card);
+          }
+        },
+        function (tx, error) { showError('Failed to retrieve trip.') }
+      )
+    },
+    function (error) { },
+    function () { }
+  )
+}
 
 function showError(message) {
   navigator.vibrate(2000)
@@ -309,6 +461,7 @@ document.addEventListener('deviceready', function () {
                 console.log('SQL_CREATE_TRIP_DETAIL', 'OK')
                 onShowAllTrip()
                 onShowDetailTrip()
+                onShowTwoTrip()
                 var sessionValue = sessionStorage.getItem("tripid");
 
                 // Set the value of the input element with ID "get_id"
