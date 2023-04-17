@@ -27,15 +27,16 @@
 
     <div class="card card-trip-app mx-3 my-4 position-relative">
         <div class="card-header">
-            <span>Trip Detail</span>
+            <span id="get_trip_title">Trip Detail</span>
         </div>
         <div class="card-body">
             <blockquote class="blockquote mb-0">
-                <p class="fs-6">Destination: KL, Malaysia</p>
-                <p class="fs-6">Risk Assesment: Yes</p>
-                <p class="fs-6"><span>Emergency Contact: 01234567890</span><span>(Cousin)</span></p>
-                <p class="pb-2 fs-6">Description: abc</p>
-                <footer class="blockquote-footer">Date Start: 12 Apr 23</footer>
+                <input type="hidden" id="get_trip_id" value="">
+                <p class="fs-6" id="get_destination">Destination: KL, Malaysia</p>
+                <p class="fs-6" id="get_risk_assesment">Risk Assesment: Yes</p>
+                <p class="fs-6"><span id="get_emergency_contact">Emergency Contact: 01234567890</span><span id="get_contact_relationship">(Cousin)</span></p>
+                <p class="pb-2 fs-6" id="get_desc">Description: abc</p>
+                <footer class="blockquote-footer" id="get_date_start">Date Start: 12 Apr 23</footer>
             </blockquote>
             <button class="stretched-link hidden-btn-app" type="button" data-bs-toggle="modal"
                 data-bs-target="#EditTripModal" data-bs-whatever="@mdo"></button>
@@ -128,53 +129,57 @@
                         <input type="hidden" name="secret_token" value="12345">
                         <div class="input-group mb-3">
                             <span class="input-group-text">Trip Title</span>
-                            <input id="trip-title-text" type="text" class="form-control" aria-label=""
+                            <input id="edit-trip-title-text" type="text" class="form-control" aria-label=""
                                 placeholder="Meeting" aria-describedby="">
                         </div>
                         <div class="input-group mb-3">
                             <span class="input-group-text">Destination</span>
-                            <input id="destination-text" type="text" class="form-control" aria-label=""
+                            <input id="edit-destination-text" type="text" class="form-control" aria-label=""
                                 placeholder="London" aria-describedby="">
                         </div>
                         <div class="input-group mb-3">
                             <span class="input-group-text">Date Start</span>
-                            <input id="date-start-text" type="date" class="form-control" aria-label=""
+                            <input id="edit-date-start-text" type="date" class="form-control" aria-label=""
                                 aria-describedby="">
                         </div>
                         <div class="input-group mb-3">
                             <span class="input-group-text">Risk Assesment</span>
-                            <input id="risk-yes-text" type="radio" value="Yes" class="btn-check" name="riskoptions"
+                            <input id="edit-risk-yes-text" type="radio" value="Yes" class="btn-check" name="editriskoptions"
                                 autocomplete="off" required>
-                            <label class="btn btn-outline-success" for="risk-yes-text">Yes</label>
+                            <label class="btn btn-outline-success" for="edit-risk-yes-text">Yes</label>
 
-                            <input id="risk-no-text" type="radio" value="No" class="btn-check" name="riskoptions"
+                            <input id="edit-risk-no-text" type="radio" value="No" class="btn-check" name="editriskoptions"
                                 autocomplete="off" required>
-                            <label class="btn btn-outline-danger" for="risk-no-text">No</label>
+                            <label class="btn btn-outline-danger" for="edit-risk-no-text">No</label>
                         </div>
 
                         <div class="input-group mb-3">
                             <span class="input-group-text">Emergency Contact</span>
-                            <input id="emergency-contact-text" type="tel" class="form-control" aria-label=""
+                            <input id="edit-emergency-contact-text" type="tel" class="form-control" aria-label=""
                                 placeholder="10 or 11 digit contact number" aria-describedby="" pattern="[0-9]{10,11}"
                                 required>
                         </div>
 
                         <div class="input-group mb-3">
                             <span class="input-group-text">Contact Relationship</span>
-                            <input id="contact-relationship-text" type="text" class="form-control" aria-label=""
+                            <input id="edit-contact-relationship-text" type="text" class="form-control" aria-label=""
                                 placeholder="Cousin" aria-describedby="">
                         </div>
 
                         <div class="input-group">
                             <span class="input-group-text">Description</span>
-                            <textarea id="desc-text" class="form-control" aria-label="With textarea"></textarea>
+                            <textarea id="edit-desc-text" class="form-control" aria-label="With textarea"></textarea>
                         </div>
 
                         <div class="col-12 my-3">
-                            <button class="btn btn-primary w-100 fw-light" id="add-user-trip" type="submit">Save
+                            <button class="btn btn-primary w-100 fw-light" id="edit-user-trip" type="submit">Save
                                 Changes</button>
                         </div>
+                        
                     </form>
+                    <div class="col-12 my-3">
+                        <button class="btn btn-danger w-100 fw-light" id="delete-user-trip">Delete Trip</button>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -198,22 +203,22 @@
                         <input type="hidden" name="secret_token" value="12345">
                         <div class="input-group mb-3">
                             <span class="input-group-text">Type of expenses</span>
-                            <input id="trip-title-text" type="text" class="form-control" aria-label=""
+                            <input id="" type="text" class="form-control" aria-label=""
                                 placeholder="Food" aria-describedby="">
                         </div>
                         <div class="input-group mb-3">
                             <span class="input-group-text">Amount of the expenses($)</span>
-                            <input id="destination-text" type="text" pattern="[0-9]*" inputmode="numeric"
+                            <input id="" type="text" pattern="[0-9]*" inputmode="numeric"
                                 class="form-control" aria-label="" placeholder="100"
                                 aria-describedby="">
                         </div>
                         <div class="input-group">
                             <span class="input-group-text">Additional Comment</span>
-                            <textarea id="desc-text" class="form-control" aria-label="With textarea"></textarea>
+                            <textarea id="" class="form-control" aria-label="With textarea"></textarea>
                         </div>
 
                         <div class="col-12 my-3">
-                            <button class="btn btn-primary w-100 fw-light" id="add-user-trip" type="submit">Add New
+                            <button class="btn btn-primary w-100 fw-light" id="" type="submit">Add New
                                 Expenses</button>
                         </div>
                     </form>
@@ -240,22 +245,22 @@
                         <input type="hidden" name="secret_token" value="12345">
                         <div class="input-group mb-3">
                             <span class="input-group-text">Type of expenses</span>
-                            <input id="trip-title-text" type="text" class="form-control" aria-label=""
+                            <input id="" type="text" class="form-control" aria-label=""
                                 placeholder="Food" aria-describedby="">
                         </div>
                         <div class="input-group mb-3">
                             <span class="input-group-text">Amount of the expenses($)</span>
-                            <input id="destination-text" type="text" pattern="[0-9]*" inputmode="numeric"
+                            <input id="" type="text" pattern="[0-9]*" inputmode="numeric"
                                 class="form-control" aria-label="" placeholder="100"
                                 aria-describedby="">
                         </div>
                         <div class="input-group">
                             <span class="input-group-text">Additional Comment</span>
-                            <textarea id="desc-text" class="form-control" aria-label="With textarea"></textarea>
+                            <textarea id="" class="form-control" aria-label="With textarea"></textarea>
                         </div>
 
                         <div class="col-12 my-3">
-                            <button class="btn btn-primary w-100 fw-light" id="add-user-trip" type="submit">Confirm
+                            <button class="btn btn-primary w-100 fw-light" id="" type="submit">Confirm
                                 Changes</button>
                         </div>
                     </form>

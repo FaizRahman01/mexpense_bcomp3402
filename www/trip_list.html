@@ -41,6 +41,7 @@
     <div class="card card-trip-app mx-3 my-4 position-relative">
         <div class="card-header">
             <span>Trip Name</span>
+            <input type="hidden" name="secret_token" value="12345">
         </div>
         <div class="card-body">
             <blockquote class="blockquote mb-0">
@@ -67,7 +68,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-danger">Clear</button>
+                    <button type="button" class="btn btn-danger" id="delete-all-user-trip">Clear</button>
                 </div>
             </div>
         </div>
