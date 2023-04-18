@@ -1,22 +1,21 @@
 let db = null
 let isDbReady = false
 
-const SQL_CREATE_TRIP_DETAIL = 'CREATE TABLE IF NOT EXISTS user_trip(trip_id INTEGER PRIMARY KEY AUTOINCREMENT, trip_title TEXT NOT NULL, destination_name TEXT NOT NULL, trip_start_date DATE NOT NULL, risk_assessment_trip NOT NULL, emergency_contact TEXT, contactnum_relationship TEXT, trip_desc TEXT)';
+const SQL_CREATE_TRIP_DETAIL = 'CREATE TABLE IF NOT EXISTS user_trip(trip_id INTEGER PRIMARY KEY AUTOINCREMENT, trip_title TEXT NOT NULL, destination_name TEXT NOT NULL, trip_start_date DATE NOT NULL, risk_assessment_trip TEXT NOT NULL, emergency_contact TEXT, contactnum_relationship TEXT, trip_desc TEXT)';
 const SQL_INSERT_NEW_TRIP = 'INSERT INTO user_trip(trip_title, destination_name, trip_start_date, risk_assessment_trip, emergency_contact, contactnum_relationship, trip_desc) VALUES (?, ?, ?, ?, ?, ?, ?)'
 const SQL_SELECT_ALL_TRIP = 'SELECT trip_id,trip_title,destination_name,trip_start_date FROM user_trip ORDER BY trip_title ASC';
 const SQL_DELETE_ALL_TRIP = 'DELETE FROM user_trip'
 const SQL_SELECT_TWO_TRIP = 'SELECT trip_id, trip_title,destination_name,trip_start_date FROM user_trip ORDER BY trip_start_date ASC LIMIT 2'
-const SQL_RESET_USER_ID = 'DELETE FROM sqlite_sequence WHERE name=`user_trip`'
 const SQL_SELECT_ONE_TRIP = 'SELECT trip_title,destination_name,trip_start_date, risk_assessment_trip, emergency_contact, contactnum_relationship, trip_desc FROM user_trip WHERE trip_id=?';
 const SQL_DELETE_ONE_TRIP = 'DELETE FROM user_trip WHERE trip_id = ?'
 const SQL_UPDATE_ONE_TRIP = 'UPDATE user_trip SET trip_title=?, destination_name=?, trip_start_date=?, risk_assessment_trip=?, emergency_contact=?, contactnum_relationship=?, trip_desc=? WHERE trip_id=?'
 
-const SQL_CREATE_EXPENSES_DETAIL = 'CREATE TABLE IF NOT EXISTS user_trip(trip_id INTEGER PRIMARY KEY AUTOINCREMENT, trip_title TEXT NOT NULL, destination_name TEXT NOT NULL, trip_start_date DATE NOT NULL, risk_assessment_trip NOT NULL, emergency_contact TEXT, contactnum_relationship TEXT, trip_desc TEXT)';
-const SQL_INSERT_NEW_EXPENSES = 'INSERT INTO user_trip(trip_title, destination_name, trip_start_date, risk_assessment_trip, emergency_contact, contactnum_relationship, trip_desc) VALUES (?, ?, ?, ?, ?, ?, ?)'
-const SQL_SELECT_ALL_EXPENSES = 'SELECT trip_id,trip_title,destination_name,trip_start_date FROM user_trip ORDER BY trip_title ASC';
-const SQL_DELETE_ONE_EXPENSES = 'DELETE FROM user_trip WHERE trip_id = ?'
-
-
+const SQL_CREATE_EXPENSES_DETAIL = 'CREATE TABLE IF NOT EXISTS user_expenses(expense_id INTEGER PRIMARY KEY AUTOINCREMENT, trip_id INTEGER NOT NULL, expense_type TEXT NOT NULL, money_spent REAL NOT NULL, time_record TEXT NOT NULL, comment_expense TEXT, FOREIGN KEY (trip_id) REFERENCES user_trip(trip_id) ON DELETE CASCADE)';
+const SQL_INSERT_NEW_EXPENSES = 'INSERT INTO user_expenses(trip_id, expense_type, money_spent, time_record, comment_expense) VALUES (?, ?, ?, ?, ?)'
+const SQL_SELECT_ALL_EXPENSES = 'SELECT * FROM user_expenses WHERE trip_id = ? ORDER BY time_record DESC';
+const SQL_DELETE_ONE_EXPENSES = 'DELETE FROM user_expenses WHERE trip_id = ? AND expense_id = ?'
+const SQL_UPDATE_ONE_EXPENSES = 'UPDATE user_expenses expense_type=?, money_spent=?, time_record=?, comment_expense=? WHERE trip_id = ? AND expense_id = ?'
+const SQL_SELECT_TOTAL_EXPENSES = 'SELECT SUM(money_spent) AS result_expenses FROM user_expenses WHERE trip_id = ?;';
 
 function onSaveNewTripClicked() {
   if (!isDbReady) {
@@ -239,30 +238,6 @@ function onShowDetailTrip() {
   )
 }
 
-
-function onResetUserId() {
-  if (!isDbReady) {
-    showError('Database not ready. Please try again later')
-    return
-  }
-
-  db.transaction(
-    function (tx) {
-      tx.executeSql(
-        SQL_RESET_USER_ID,
-        [],
-        function (tx, result) { //clear ui
-
-          onShowAllTrip()
-        },
-        function (tx, error) { showError('Failed to reset id.') }
-      )
-    },
-    function (error) { },
-    function () { }
-  )
-}
-
 function onDeleteAllTrip() {
   if (!isDbReady) {
     showError('Database not ready. Please try again later')
@@ -274,8 +249,7 @@ function onDeleteAllTrip() {
       tx.executeSql(
         SQL_DELETE_ALL_TRIP,
         [],
-        function (tx, result) { //clear ui
-          onResetUserId()
+        function (tx, result) {
           onShowAllTrip()
           history.back();
         },
@@ -441,6 +415,142 @@ function onShowTwoTrip() {
   )
 }
 
+
+//expenses
+
+function onSaveNewExpensesClicked() {
+  if (!isDbReady) {
+    showError('Database not ready. Please try again later.')
+    return
+  }
+  // get input from UI
+  let type = $.trim($('#text-expense-type').val())
+  let amount_spent = $.trim($('#text-amount-expense').val())
+  let current_timedate = $.trim($('#add-expensesdatetime').val())
+  let comment = $.trim($('#text-comment').val())
+
+  var trip_id_get = sessionStorage.getItem("tripid");
+  // ensure input is validated
+  // show error if it is not
+  if (type === '' || amount_spent === '' || current_timedate === '') {
+    showError("Fill in the required field.")
+    return
+  }
+  db.transaction(
+    function (tx) {
+      tx.executeSql(
+        SQL_INSERT_NEW_EXPENSES,
+        [trip_id_get, type, amount_spent, current_timedate, comment],
+        function (tx, result) {
+          $('#text-expense-type').val('')
+          $('#text-amount-expense').val('')
+          $('#add-expensesdatetime').val('')
+          $('#text-comment').val('')
+
+          history.back();
+
+        },
+        function (tx, error) { showError('Failed to add expenses.') }
+      )
+    },
+    function (error) { },
+    function () { }
+  )
+}
+
+function onShowTotalExpenses() {
+  if (!isDbReady) {
+    showError('Database not ready. Please try again later.')
+    return
+  }
+
+  var trip_id_get = sessionStorage.getItem("tripid");
+  db.transaction(
+    function (tx) {
+      tx.executeSql(
+        SQL_SELECT_TOTAL_EXPENSES,
+        [trip_id_get],
+        function (tx, result) {
+          if (result.rows.length > 0) {
+            total_count_expense = result.rows.item(0).result_expenses
+            var show_expense = total_count_expense.toFixed(2);
+            $('#text-total-expenses').text(show_expense)
+          }
+
+        },
+        function (tx, error) { showError('Failed to show trip detail.') }
+      )
+    },
+    function (error) { },
+    function () { }
+  )
+}
+
+function onShowAllExpenses() {
+  if (!isDbReady) {
+    showError('Database not ready. Please try again later.')
+    return
+  }
+  var trip_id_get = sessionStorage.getItem("tripid");
+  db.transaction(
+    function (tx) {
+      tx.executeSql(
+        SQL_SELECT_ALL_EXPENSES,
+        [trip_id_get],
+        function (tx, result) {
+
+          for (let index = 0; index < result.rows.length; index++) {
+            let card_expenses = `
+                    <div class="card  my-3 mx-3">
+                    <div class="card-body">
+            
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-8">
+                                    <p class="card-text text-sm-start">${result.rows.item(index).expense_type}</p>
+                                    <p class="card-text text-sm-start">Amount spent: <span>${result.rows.item(index).money_spent}</span>$</p>
+                                    <p class="card-text text-sm-start mb-4">Comment: ${result.rows.item(index).comment_expense}</p>
+                                    <footer class="blockquote-footer" id="get_date_start">${result.rows.item(index).time_record}</footer>
+                                </div>
+            
+            
+                                <div class="col-4 my-2 text-sm-end text-center align-items-center">
+                                    <button type="button" data-bs-toggle="modal" data-bs-target="#EditExpensesModal"
+                                        class="main-btn-app rounded-4 btn-app">
+                                        <span>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 14 14">
+                                                <g fill="none" stroke="#e6ebeb" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path
+                                                        d="m7.5 9l-3 .54L5 6.5L10.73.79a1 1 0 0 1 1.42 0l1.06 1.06a1 1 0 0 1 0 1.42Z" />
+                                                    <path d="M12 9.5v3a1 1 0 0 1-1 1H1.5a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h3" />
+                                                </g>
+                                            </svg>
+                                        </span>
+                                        Edit
+                                    </button>
+                                </div>
+            
+                            </div>
+                        </div>
+            
+            
+                    </div>
+                </div>         
+            `;
+
+            // Append the card to the card container element
+            $('#CardExpensesContainer').append(card_expenses);
+
+          }
+        },
+        function (tx, error) { showError('Failed to show expenses.') }
+      )
+    },
+    function (error) { },
+    function () { }
+  )
+}
+
 function showError(message) {
   navigator.vibrate(2000)
   navigator.notification.beep(1)
@@ -453,6 +563,8 @@ document.addEventListener('deviceready', function () {
     $('#edit-user-trip').on('click', onUpdateTrip)
     $('#delete-user-trip').on('click', onDeleteTrip)
     $('#delete-all-user-trip').on('click', onDeleteAllTrip)
+
+    $('#btn-add-expense').on('click', onSaveNewExpensesClicked)
     db = window.sqlitePlugin.openDatabase(
       { 'name': 'm_expense.db', 'location': 'default' },
       function (database) { // SUCCESS callback
@@ -472,26 +584,26 @@ document.addEventListener('deviceready', function () {
 
                 // Set the value of the input element with ID "get_id"
                 $("#get_trip_id").val(sessionValue);
-                
-                $('#add-expensesdatetime').on('click', function() {
+
+                $('#add-expensesdatetime').on('click', function () {
                   // Get the current date and time
                   var now = new Date();
-                
+
                   // Format the date and time
                   var dateString = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate();
                   var timeString = now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds();
-                
+
                   // Set the value of the input element to the date and time
                   $('#add-expensesdatetime').val(dateString + ' ' + timeString);
                 });
-                $('#edit-expensesdatetime').on('click', function() {
+                $('#edit-expensesdatetime').on('click', function () {
                   // Get the current date and time
                   var now = new Date();
-                
+
                   // Format the date and time
                   var dateString = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate();
                   var timeString = now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds();
-                
+
                   // Set the value of the input element to the date and time
                   $('#edit-expensesdatetime').val(dateString + ' ' + timeString);
                 });
@@ -499,6 +611,20 @@ document.addEventListener('deviceready', function () {
               function (tx, error) {
                 isDbReady = false
                 console.log('SQL_CREATE_TRIP_DETAIL ERROR', error.message)
+              } // ERROR callback
+            )
+            tx.executeSql(
+              SQL_CREATE_EXPENSES_DETAIL,
+              [],
+              function (tx, result) {
+                isDbReady = true
+                console.log('SQL_CREATE_EXPENSES_DETAIL', 'OK')
+                onShowTotalExpenses()
+                onShowAllExpenses()
+              }, // SUCCESS callback
+              function (tx, error) {
+                isDbReady = false
+                console.log('SQL_CREATE_EXPENSES_DETAIL ERROR', error.message)
               } // ERROR callback
             )
           },
