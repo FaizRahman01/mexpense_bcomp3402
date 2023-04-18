@@ -13,8 +13,9 @@ const SQL_UPDATE_ONE_TRIP = 'UPDATE user_trip SET trip_title=?, destination_name
 const SQL_CREATE_EXPENSES_DETAIL = 'CREATE TABLE IF NOT EXISTS user_expenses(expense_id INTEGER PRIMARY KEY AUTOINCREMENT, trip_id INTEGER NOT NULL, expense_type TEXT NOT NULL, money_spent REAL NOT NULL, time_record TEXT NOT NULL, comment_expense TEXT, FOREIGN KEY (trip_id) REFERENCES user_trip(trip_id) ON DELETE CASCADE)';
 const SQL_INSERT_NEW_EXPENSES = 'INSERT INTO user_expenses(trip_id, expense_type, money_spent, time_record, comment_expense) VALUES (?, ?, ?, ?, ?)'
 const SQL_SELECT_ALL_EXPENSES = 'SELECT * FROM user_expenses WHERE trip_id = ? ORDER BY time_record DESC';
+const SQL_SELECT_ONE_EXPENSES = 'SELECT * FROM user_expenses WHERE trip_id = ? AND expense_id = ?';
 const SQL_DELETE_ONE_EXPENSES = 'DELETE FROM user_expenses WHERE trip_id = ? AND expense_id = ?'
-const SQL_UPDATE_ONE_EXPENSES = 'UPDATE user_expenses expense_type=?, money_spent=?, time_record=?, comment_expense=? WHERE trip_id = ? AND expense_id = ?'
+const SQL_UPDATE_ONE_EXPENSES = 'UPDATE user_expenses SET expense_type=?, money_spent=?, time_record=?, comment_expense=? WHERE trip_id = ? AND expense_id = ?'
 const SQL_SELECT_TOTAL_EXPENSES = 'SELECT SUM(money_spent) AS result_expenses FROM user_expenses WHERE trip_id = ?;';
 
 function onSaveNewTripClicked() {
@@ -564,11 +565,12 @@ function onShowAllExpenses() {
             // create settings button
             var settingsBtn = $('<button>').addClass('main-btn-app rounded-4 btn-app').on('click', function () {
               sessionStorage.setItem('expenseid', `${result.rows.item(index).expense_id}`);
+              onShowDetailExpenses()
             }).attr({
               'type': 'button',
               'data-bs-toggle': 'modal',
               'data-bs-target': '#EditExpensesModal'
-            }).html(`<span><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 14 14"><g fill="none" stroke="#e6ebeb" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 9l-3 .54L5 6.5L10.73.79a1 1 0 0 1 1.42 0l1.06 1.06a1 1 0 0 1 0 1.42Z" /><path d="M12 9.5v3a1 1 0 0 1-1 1H1.5a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h3" /></g></svg></span>${result.rows.item(index).expense_type}`);
+            }).html(`<span><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 14 14"><g fill="none" stroke="#e6ebeb" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 9l-3 .54L5 6.5L10.73.79a1 1 0 0 1 1.42 0l1.06 1.06a1 1 0 0 1 0 1.42Z" /><path d="M12 9.5v3a1 1 0 0 1-1 1H1.5a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h3" /></g></svg></span>Edit`);
 
             // append settings button to column
             btnCol.append(settingsBtn);
@@ -592,8 +594,101 @@ function onShowAllExpenses() {
 
 
           }
+          
         },
         function (tx, error) { showError('Failed to show expenses.') }
+      )
+    },
+    function (error) { },
+    function () { }
+  )
+}
+
+function onUpdateExpenses() {
+  if (!isDbReady) {
+    showError('Database not ready. Please try again later')
+    return
+  }
+  // get input from UI
+  let type = $.trim($('#edit-text-expense-type').val())
+  let amount_spent = $.trim($('#edit-text-amount-expense').val())
+  let current_timedate = $.trim($('#edit-expensesdatetime').val())
+  let comment = $.trim($('#edit-text-comment').val())
+
+  var trip_id_get = sessionStorage.getItem("tripid");
+  var expense_id_get = sessionStorage.getItem("expenseid");
+  // ensure input is validated
+  // show error if it is not
+  if (type === '' || amount_spent === '' || current_timedate === '') {
+    showError("Fill in the required field.")
+    return
+  }
+
+  db.transaction(
+    function (tx) {
+      tx.executeSql(
+        SQL_UPDATE_ONE_EXPENSES,
+        [type, amount_spent, current_timedate, comment, trip_id_get, expense_id_get],
+        function (tx, result) { //clear ui
+          onShowAllExpenses()
+          onShowTotalExpenses()
+          history.back();
+        },
+        function (tx, error) { showError('Failed to update expenses.') }
+      )
+    },
+    function (error) { },
+    function () { }
+  )
+}
+
+function onShowDetailExpenses() {
+  if (!isDbReady) {
+    showError('Database not ready. Please try again later.')
+    return
+  }
+
+  var trip_id_get = sessionStorage.getItem("tripid");
+  var expense_id_get = sessionStorage.getItem("expenseid");
+  db.transaction(
+    function (tx) {
+      tx.executeSql(
+        SQL_SELECT_ONE_EXPENSES,
+        [trip_id_get,expense_id_get],
+        function (tx, result) {
+          if (result.rows.length > 0) {
+            $('#edit-text-expense-type').val(`${result.rows.item(0).expense_type}`)
+            $('#edit-text-amount-expense').val(`${result.rows.item(0).money_spent}`)
+            $('#edit-expensesdatetime').val(`${result.rows.item(0).time_record}`)
+            $('#edit-text-comment').val(`${result.rows.item(0).comment_expense}`)
+          }
+
+        },
+        function (tx, error) { showError('Failed to show expenses detail.') }
+      )
+    },
+    function (error) { },
+    function () { }
+  )
+}
+
+function onDeleteExpense() {
+  if (!isDbReady) {
+    showError('Database not ready. Please try again later')
+    return
+  }
+
+  var trip_id_get = sessionStorage.getItem("tripid");
+  var expense_id_get = sessionStorage.getItem("expenseid");
+  db.transaction(
+    function (tx) {
+      tx.executeSql(
+        SQL_DELETE_ONE_EXPENSES,
+        [trip_id_get, expense_id_get],
+        function (tx, result) { //clear ui
+          history.back();
+        },
+        function (tx, error) { showError('Failed to delete trip.') }
       )
     },
     function (error) { },
@@ -615,6 +710,8 @@ document.addEventListener('deviceready', function () {
     $('#delete-all-user-trip').on('click', onDeleteAllTrip)
 
     $('#btn-add-expense').on('click', onSaveNewExpensesClicked)
+    $('#btn-edit-expense').on('click', onUpdateExpenses)
+    $('#btn-delete-expense').on('click', onDeleteExpense)
     db = window.sqlitePlugin.openDatabase(
       { 'name': 'm_expense.db', 'location': 'default' },
       function (database) { // SUCCESS callback
@@ -634,7 +731,21 @@ document.addEventListener('deviceready', function () {
 
                 // Set the value of the input element with ID "get_id"
                 $("#get_trip_id").val(sessionValue);
-
+              }, // SUCCESS callback
+              function (tx, error) {
+                isDbReady = false
+                console.log('SQL_CREATE_TRIP_DETAIL ERROR', error.message)
+              } // ERROR callback
+            )
+            tx.executeSql(
+              SQL_CREATE_EXPENSES_DETAIL,
+              [],
+              function (tx, result) {
+                isDbReady = true
+                console.log('SQL_CREATE_EXPENSES_DETAIL', 'OK')
+                onShowTotalExpenses()
+                onShowAllExpenses()
+                onShowDetailExpenses()
                 $('#add-expensesdatetime').on('click', function () {
                   // Get the current date and time
                   var now = new Date();
@@ -657,20 +768,6 @@ document.addEventListener('deviceready', function () {
                   // Set the value of the input element to the date and time
                   $('#edit-expensesdatetime').val(dateString + ' ' + timeString);
                 });
-              }, // SUCCESS callback
-              function (tx, error) {
-                isDbReady = false
-                console.log('SQL_CREATE_TRIP_DETAIL ERROR', error.message)
-              } // ERROR callback
-            )
-            tx.executeSql(
-              SQL_CREATE_EXPENSES_DETAIL,
-              [],
-              function (tx, result) {
-                isDbReady = true
-                console.log('SQL_CREATE_EXPENSES_DETAIL', 'OK')
-                onShowTotalExpenses()
-                onShowAllExpenses()
               }, // SUCCESS callback
               function (tx, error) {
                 isDbReady = false
