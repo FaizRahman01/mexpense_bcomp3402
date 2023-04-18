@@ -498,48 +498,98 @@ function onShowAllExpenses() {
         SQL_SELECT_ALL_EXPENSES,
         [trip_id_get],
         function (tx, result) {
+          //               <div class="card  my-3 mx-3">
+          //     <div class="card-body">
 
+          //         <div class="container">
+          //             <div class="row">
+          //                 <div class="col-8">
+          //                     <p class="card-text text-sm-start">${result.rows.item(index).expense_type}</p>
+          //                     <p class="card-text text-sm-start">Amount spent: <span>${result.rows.item(index).money_spent}</span>$</p>
+          //                     <p class="card-text text-sm-start mb-4">Comment: ${result.rows.item(index).comment_expense}</p>
+          //                     <footer class="blockquote-footer" id="get_date_start">${result.rows.item(index).time_record}</footer>
+          //                 </div>
+
+
+          //                 <div class="col-4 my-2 text-sm-end text-center align-items-center">
+          //                     <button type="button" data-bs-toggle="modal" data-bs-target="#EditExpensesModal"
+          //                         class="main-btn-app rounded-4 btn-app">
+          //                         <span>
+          //                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 14 14">
+          //                                 <g fill="none" stroke="#e6ebeb" stroke-linecap="round" stroke-linejoin="round">
+          //                                     <path
+          //                                         d="m7.5 9l-3 .54L5 6.5L10.73.79a1 1 0 0 1 1.42 0l1.06 1.06a1 1 0 0 1 0 1.42Z" />
+          //                                     <path d="M12 9.5v3a1 1 0 0 1-1 1H1.5a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h3" />
+          //                                 </g>
+          //                             </svg>
+          //                         </span>
+          //                         Edit
+          //                     </button>
+          //                 </div>
+
+          //             </div>
+          //         </div>
+
+
+          //     </div>
+          // </div>         
           for (let index = 0; index < result.rows.length; index++) {
-            let card_expenses = `
-                    <div class="card  my-3 mx-3">
-                    <div class="card-body">
-            
-                        <div class="container">
-                            <div class="row">
-                                <div class="col-8">
-                                    <p class="card-text text-sm-start">${result.rows.item(index).expense_type}</p>
-                                    <p class="card-text text-sm-start">Amount spent: <span>${result.rows.item(index).money_spent}</span>$</p>
-                                    <p class="card-text text-sm-start mb-4">Comment: ${result.rows.item(index).comment_expense}</p>
-                                    <footer class="blockquote-footer" id="get_date_start">${result.rows.item(index).time_record}</footer>
-                                </div>
-            
-            
-                                <div class="col-4 my-2 text-sm-end text-center align-items-center">
-                                    <button type="button" data-bs-toggle="modal" data-bs-target="#EditExpensesModal"
-                                        class="main-btn-app rounded-4 btn-app">
-                                        <span>
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 14 14">
-                                                <g fill="none" stroke="#e6ebeb" stroke-linecap="round" stroke-linejoin="round">
-                                                    <path
-                                                        d="m7.5 9l-3 .54L5 6.5L10.73.79a1 1 0 0 1 1.42 0l1.06 1.06a1 1 0 0 1 0 1.42Z" />
-                                                    <path d="M12 9.5v3a1 1 0 0 1-1 1H1.5a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h3" />
-                                                </g>
-                                            </svg>
-                                        </span>
-                                        Edit
-                                    </button>
-                                </div>
-            
-                            </div>
-                        </div>
-            
-            
-                    </div>
-                </div>         
-            `;
+            // create a div element with class "hahe abc heho"
+            // Create the card element
+            // Create a new button element with the given attributes
+            // create a new card element
+            var card = $('<div>').addClass('card my-3 mx-3');
 
-            // Append the card to the card container element
-            $('#CardExpensesContainer').append(card_expenses);
+            // create card body element
+            var cardBody = $('<div>').addClass('card-body');
+
+            // create container element
+            var container = $('<div>').addClass('container');
+
+            // create row element
+            var row = $('<div>').addClass('row');
+
+            // create column for card content
+            var contentCol = $('<div>').addClass('col-8');
+
+            // add card content
+            contentCol.append($('<p>').addClass('card-text text-sm-start').text(`${result.rows.item(index).expense_type}`));
+            contentCol.append($('<p>').addClass('card-text text-sm-start').text(`Amount: `).append($('<span>').text(`${result.rows.item(index).money_spent}`)).append('$'));
+            contentCol.append($('<p>').addClass('card-text text-sm-start mb-4').text(`${result.rows.item(index).comment_expense}`));
+            contentCol.append($('<footer>').addClass('blockquote-footer').attr('id', 'get_date_start').text(`${result.rows.item(index).time_record}`));
+
+            // create column for settings button
+            var btnCol = $('<div>').addClass('col-4 my-2 text-sm-end text-center align-items-center');
+
+            // create settings button
+            var settingsBtn = $('<button>').addClass('main-btn-app rounded-4 btn-app').on('click', function () {
+              sessionStorage.setItem('expenseid', `${result.rows.item(index).expense_id}`);
+            }).attr({
+              'type': 'button',
+              'data-bs-toggle': 'modal',
+              'data-bs-target': '#EditExpensesModal'
+            }).html(`<span><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 14 14"><g fill="none" stroke="#e6ebeb" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 9l-3 .54L5 6.5L10.73.79a1 1 0 0 1 1.42 0l1.06 1.06a1 1 0 0 1 0 1.42Z" /><path d="M12 9.5v3a1 1 0 0 1-1 1H1.5a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h3" /></g></svg></span>${result.rows.item(index).expense_type}`);
+
+            // append settings button to column
+            btnCol.append(settingsBtn);
+
+            // append content and button columns to row
+            row.append(contentCol).append(btnCol);
+
+            // append row to container
+            container.append(row);
+
+            // append container to card body
+            cardBody.append(container);
+
+            // append card body to card
+            card.append(cardBody);
+
+
+            // Append the card to the main container
+            $('#CardExpensesContainer').append(card);
+
+
 
           }
         },
