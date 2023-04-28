@@ -4,7 +4,9 @@ let isDbReady = false
 const SQL_CREATE_TRIP_DETAIL = 'CREATE TABLE IF NOT EXISTS user_trip(trip_id INTEGER PRIMARY KEY AUTOINCREMENT, trip_title TEXT NOT NULL, destination_name TEXT NOT NULL, trip_start_date DATE NOT NULL, risk_assessment_trip TEXT NOT NULL, emergency_contact TEXT, contactnum_relationship TEXT, trip_desc TEXT)';
 const SQL_INSERT_NEW_TRIP = 'INSERT INTO user_trip(trip_title, destination_name, trip_start_date, risk_assessment_trip, emergency_contact, contactnum_relationship, trip_desc) VALUES (?, ?, ?, ?, ?, ?, ?)'
 const SQL_SELECT_ALL_TRIP = 'SELECT trip_id,trip_title,destination_name,trip_start_date FROM user_trip ORDER BY trip_title ASC';
-const SQL_SELECT_SEARCH_TRIP = 'SELECT trip_id,trip_title,destination_name,trip_start_date FROM user_trip WHERE trip_title LIKE ? ORDER BY trip_title ASC ';
+const SQL_SELECT_SEARCH_ALL = 'SELECT trip_id,trip_title,destination_name,trip_start_date FROM user_trip WHERE trip_title LIKE ? OR destination_name LIKE ? ORDER BY trip_title ASC ';
+const SQL_SELECT_SEARCH_TRIPTITLE = 'SELECT trip_id,trip_title,destination_name,trip_start_date FROM user_trip WHERE trip_title LIKE ? ORDER BY trip_title ASC ';
+const SQL_SELECT_SEARCH_DESTINATION = 'SELECT trip_id,trip_title,destination_name,trip_start_date FROM user_trip WHERE destination_name LIKE ? ORDER BY trip_title ASC ';
 const SQL_DELETE_ALL_TRIP = 'DELETE FROM user_trip'
 const SQL_SELECT_TWO_TRIP = 'SELECT trip_id, trip_title,destination_name,trip_start_date FROM user_trip ORDER BY trip_start_date ASC LIMIT 2'
 const SQL_SELECT_ONE_TRIP = 'SELECT trip_title,destination_name,trip_start_date, risk_assessment_trip, emergency_contact, contactnum_relationship, trip_desc FROM user_trip WHERE trip_id=?';
@@ -418,17 +420,29 @@ function onShowTwoTrip() {
 }
 
 
-function onShowSearchTrip(tripkeyword) {
+function onShowSearchResult(tripkeyword,searchcategory) {
   if (!isDbReady) {
     showError('Database not ready. Please try again later.')
     return
   }
 
-  if(tripkeyword && tripkeyword.trim() !== '') {
+  let SQL_SELECT_SEARCH = '';
+  if(searchcategory === 'search-trip'){
+    SQL_SELECT_SEARCH  = SQL_SELECT_SEARCH_TRIPTITLE;
+  }
+  else if(searchcategory === 'search-destination') {
+    SQL_SELECT_SEARCH  = SQL_SELECT_SEARCH_DESTINATION;
+  }
+  else{
+    SQL_SELECT_SEARCH  = SQL_SELECT_SEARCH_ALL;
+  }
+  if(tripkeyword && tripkeyword.trim() !== '' 
+  && searchcategory === 'search-trip' 
+  || searchcategory === 'search-destination') {
     db.transaction(
       function (tx) {
         tx.executeSql(
-          SQL_SELECT_SEARCH_TRIP,
+          SQL_SELECT_SEARCH,
           [tripkeyword + '%'],
           function (tx, result) {
             $('#cardContainer').empty();
@@ -492,7 +506,82 @@ function onShowSearchTrip(tripkeyword) {
   
             }
           },
-          function (tx, error) { showError('Failed to search trip.') }
+          function (tx, error) { showError('Failed to search selected categoy.') }
+        )
+      },
+      function (error) { },
+      function () { }
+    )
+  }
+  else if (tripkeyword && tripkeyword.trim() !== '') {
+    db.transaction(
+      function (tx) {
+        tx.executeSql(
+          SQL_SELECT_SEARCH,
+          [tripkeyword + '%', tripkeyword + '%'],
+          function (tx, result) {
+            $('#cardContainer').empty();
+            for (let index = 0; index < result.rows.length; index++) {
+              // <div class="card card-trip-app mx-3 my-4 position-relative">
+              //   <div class="card-header">
+              //     <span>Trip Name</span>
+              //     <input type="hidden" name="test" value="tripid"></input>
+              //   </div>
+              //   <div class="card-body">
+              //     <blockquote class="blockquote mb-0">
+              //       <p>Destination: Johor, Malaysia</p>
+              //       <footer class="blockquote-footer">Date Start: 12 Apr 23</footer>
+              //     </blockquote>
+              //     <a href="edit_trip.html" class="stretched-link btn-app"></a>
+              //   </div>
+              // </div>
+              // Create the card element
+              var card = $('<div>', {
+                'class': 'card card-trip-app mx-3 my-4 position-relative'
+              });
+  
+              // Create the card header element and add it to the card
+              var cardHeader = $('<div>', {
+                'class': 'card-header'
+              }).append($('<span>').text(`${result.rows.item(index).trip_title}`))
+                .append($('<input>', {
+                  'type': 'hidden',
+                  'id': 'test',
+                  'value': `${result.rows.item(index).trip_id}`
+                }));
+              card.append(cardHeader);
+  
+              // Create the card body element and add it to the card
+              var cardBody = $('<div>', {
+                'class': 'card-body'
+              });
+              card.append(cardBody);
+  
+              // Create the blockquote element and add it to the card body
+              var blockquote = $('<blockquote>', {
+                'class': 'blockquote mb-0'
+              }).append($('<p>').text(`Destination: ${result.rows.item(index).destination_name}`))
+                .append($('<footer>', {
+                  'class': 'blockquote-footer'
+                }).text(`Date Start: ${result.rows.item(index).trip_start_date}`));
+              cardBody.append(blockquote);
+  
+              // Create the link element and add its to the card body
+              var button = $('<button>', {
+                'class': 'stretched-link hidden-btn-app'
+              }).on('click', function () {
+                sessionStorage.setItem('tripid', `${result.rows.item(index).trip_id}`);
+                window.open("edit_trip.html");
+              });
+  
+              cardBody.append(button);
+  
+              // Append the card to the card container element
+              $('#cardContainer').append(card);
+  
+            }
+          },
+          function (tx, error) { showError('Failed to search all category.') }
         )
       },
       function (error) { },
@@ -799,7 +888,15 @@ document.addEventListener('deviceready', function () {
     $('#trip-search').on('input', function(){
       $('#cardContainer').empty();
       let trip_keyword = $(this).val();
-      onShowSearchTrip(trip_keyword);
+      let search_category = $('input[name=radio-search]:checked').val();
+      onShowSearchResult(trip_keyword, search_category);
+    })
+
+    $('input[name=radio-search]').on('change', function(){
+      $('#cardContainer').empty();
+      let trip_keyword = $('#trip-search').val();
+      let search_category = $(this).val();
+      onShowSearchResult(trip_keyword, search_category);
     })
 
     $('#btn-add-expense').on('click', onSaveNewExpensesClicked)

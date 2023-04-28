@@ -24,12 +24,20 @@
             <span class="navbar-brand mb-0 h1 text-white">M-Expense</span>
         </div>
     </nav>
+
     <div class="container mb-3">
         <div class="row">
 
             <div class="col-12 text-sm-center text-end pt-3">
                 <div class="input-group">
                     <input type="text" class="form-control" placeholder="Search..." id="trip-search">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button" data-bs-toggle="offcanvas" href="#advanced-search-list" role="button" aria-controls="advanced-search-list">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
+                                <path fill="currentColor" d="M11 18q-.425 0-.713-.288T10 17q0-.425.288-.713T11 16h2q.425 0 .713.288T14 17q0 .425-.288.713T13 18h-2ZM4 8q-.425 0-.713-.288T3 7q0-.425.288-.713T4 6h16q.425 0 .713.288T21 7q0 .425-.288.713T20 8H4Zm3 5q-.425 0-.713-.288T6 12q0-.425.288-.713T7 11h10q.425 0 .713.288T18 12q0 .425-.288.713T17 13H7Z"/>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -69,6 +77,47 @@
                     <button type="button" class="btn btn-danger" id="delete-all-user-trip">Clear</button>
                 </div>
             </div>
+        </div>
+    </div>
+
+
+
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="advanced-search-list" aria-labelledby="advanced-search-listLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="advanced-search-listLabel">Advanced Search</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+
+
+            <div class="input-group mb-4">
+                <label class="form-check-label" for="all-radio">All</label>
+                <div class="input-group-append ms-2">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="radio" role="switch" name="radio-search" value="search-all" id="all-radio">
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group mb-4">
+                <label class="form-check-label" for="trip-radio">Trip Name</label>
+                <div class="input-group-append ms-2">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="radio" role="switch" name="radio-search" value="search-trip" id="trip-radio">
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label class="form-check-label" for="destination-radio">Destination</label>
+                <div class="input-group-append ms-2">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="radio" role="switch" name="radio-search" value="search-destination" id="destination-radio">
+                    </div>
+                </div>
+            </div>
+
+
         </div>
     </div>
 
