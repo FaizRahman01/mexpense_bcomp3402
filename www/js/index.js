@@ -4,9 +4,10 @@ let isDbReady = false
 const SQL_CREATE_TRIP_DETAIL = 'CREATE TABLE IF NOT EXISTS user_trip(trip_id INTEGER PRIMARY KEY AUTOINCREMENT, trip_title TEXT NOT NULL, destination_name TEXT NOT NULL, trip_start_date DATE NOT NULL, risk_assessment_trip TEXT NOT NULL, emergency_contact TEXT, contactnum_relationship TEXT, trip_desc TEXT)';
 const SQL_INSERT_NEW_TRIP = 'INSERT INTO user_trip(trip_title, destination_name, trip_start_date, risk_assessment_trip, emergency_contact, contactnum_relationship, trip_desc) VALUES (?, ?, ?, ?, ?, ?, ?)'
 const SQL_SELECT_ALL_TRIP = 'SELECT trip_id,trip_title,destination_name,trip_start_date FROM user_trip ORDER BY trip_title ASC';
-const SQL_SELECT_SEARCH_ALL = 'SELECT trip_id,trip_title,destination_name,trip_start_date FROM user_trip WHERE trip_title LIKE ? OR destination_name LIKE ? ORDER BY trip_title ASC ';
+const SQL_SELECT_SEARCH_ALL = 'SELECT trip_id,trip_title,destination_name,trip_start_date FROM user_trip WHERE trip_title LIKE ? OR destination_name LIKE ? OR trip_start_date LIKE ? ORDER BY trip_title ASC ';
 const SQL_SELECT_SEARCH_TRIPTITLE = 'SELECT trip_id,trip_title,destination_name,trip_start_date FROM user_trip WHERE trip_title LIKE ? ORDER BY trip_title ASC ';
 const SQL_SELECT_SEARCH_DESTINATION = 'SELECT trip_id,trip_title,destination_name,trip_start_date FROM user_trip WHERE destination_name LIKE ? ORDER BY trip_title ASC ';
+const SQL_SELECT_SEARCH_START_DATE = 'SELECT trip_id,trip_title,destination_name,trip_start_date FROM user_trip WHERE trip_start_date LIKE ? ORDER BY trip_start_date ASC ';
 const SQL_DELETE_ALL_TRIP = 'DELETE FROM user_trip'
 const SQL_SELECT_TWO_TRIP = 'SELECT trip_id, trip_title,destination_name,trip_start_date FROM user_trip ORDER BY trip_start_date ASC LIMIT 2'
 const SQL_SELECT_ONE_TRIP = 'SELECT trip_title,destination_name,trip_start_date, risk_assessment_trip, emergency_contact, contactnum_relationship, trip_desc FROM user_trip WHERE trip_id=?';
@@ -433,12 +434,16 @@ function onShowSearchResult(tripkeyword,searchcategory) {
   else if(searchcategory === 'search-destination') {
     SQL_SELECT_SEARCH  = SQL_SELECT_SEARCH_DESTINATION;
   }
+  else if(searchcategory === 'search-date-start') {
+    SQL_SELECT_SEARCH  = SQL_SELECT_SEARCH_START_DATE;
+  }
   else{
     SQL_SELECT_SEARCH  = SQL_SELECT_SEARCH_ALL;
   }
   if(tripkeyword && tripkeyword.trim() !== '' 
   && searchcategory === 'search-trip' 
-  || searchcategory === 'search-destination') {
+  || searchcategory === 'search-destination' 
+  || searchcategory === 'search-date-start') {
     db.transaction(
       function (tx) {
         tx.executeSql(
@@ -518,7 +523,7 @@ function onShowSearchResult(tripkeyword,searchcategory) {
       function (tx) {
         tx.executeSql(
           SQL_SELECT_SEARCH,
-          [tripkeyword + '%', tripkeyword + '%'],
+          [tripkeyword + '%', tripkeyword + '%', tripkeyword + '%'],
           function (tx, result) {
             $('#cardContainer').empty();
             for (let index = 0; index < result.rows.length; index++) {
