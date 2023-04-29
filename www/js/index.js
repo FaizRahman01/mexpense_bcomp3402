@@ -42,6 +42,10 @@ function onSaveNewTripClicked() {
     showError("Fill in the required field.")
     return
   }
+  else if (!isFinite(emergency_contact) || isNaN(parseFloat(emergency_contact)) && emergency_contact !== "") {
+    showError("Use number only for emergency contact number")
+    return
+  }
   db.transaction(
     function (tx) {
       tx.executeSql(
@@ -184,6 +188,10 @@ function onUpdateTrip() {
   var trip_id_get = sessionStorage.getItem("tripid");
   if (edit_title === '' || edit_destination === '' || edit_start_date === '' || edit_risk_assessment === '') {
     showError("Fill in the required field.")
+    return
+  }
+  else if (!isFinite(edit_emergency_contact) || isNaN(parseFloat(edit_emergency_contact)) && emergency_contact !== "") {
+    showError("Use number only for emergency contact number")
     return
   }
 
@@ -619,6 +627,10 @@ function onSaveNewExpensesClicked() {
     showError("Fill in the required field.")
     return
   }
+  else if (!isFinite(amount_spent) || isNaN(parseFloat(amount_spent))) {
+    showError("Can use number and dot symbol only")
+    return
+  }
   db.transaction(
     function (tx) {
       tx.executeSql(
@@ -803,6 +815,10 @@ function onUpdateExpenses() {
   // show error if it is not
   if (type === '' || amount_spent === '' || current_timedate === '') {
     showError("Fill in the required field.")
+    return
+  }
+  else if (!isFinite(amount_spent) || isNaN(parseFloat(amount_spent))) {
+    showError("Can use number and dot symbol only")
     return
   }
 
