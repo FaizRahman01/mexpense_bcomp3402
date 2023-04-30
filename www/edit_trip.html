@@ -34,7 +34,8 @@
                 <input type="hidden" id="get_trip_id" value="">
                 <p class="fs-6" id="get_destination">Destination: KL, Malaysia</p>
                 <p class="fs-6" id="get_risk_assesment">Risk Assesment: Yes</p>
-                <p class="fs-6"><span id="get_emergency_contact">Emergency Contact: 01234567890</span><span id="get_contact_relationship">(Cousin)</span></p>
+                <p class="fs-6"><span id="get_emergency_contact">Emergency Contact: 01234567890</span><span
+                        id="get_contact_relationship">(Cousin)</span></p>
                 <p class="pb-2 fs-6" id="get_desc">Description: abc</p>
                 <footer class="blockquote-footer" id="get_date_start">Date Start: 12 Apr 23</footer>
             </blockquote>
@@ -144,12 +145,12 @@
                         </div>
                         <div class="input-group mb-3">
                             <span class="input-group-text">Risk Assesment</span>
-                            <input id="edit-risk-yes-text" type="radio" value="Yes" class="btn-check" name="editriskoptions"
-                                autocomplete="off" required>
+                            <input id="edit-risk-yes-text" type="radio" value="Yes" class="btn-check"
+                                name="editriskoptions" autocomplete="off" required>
                             <label class="btn btn-outline-success" for="edit-risk-yes-text">Yes</label>
 
-                            <input id="edit-risk-no-text" type="radio" value="No" class="btn-check" name="editriskoptions"
-                                autocomplete="off" required>
+                            <input id="edit-risk-no-text" type="radio" value="No" class="btn-check"
+                                name="editriskoptions" autocomplete="off" required>
                             <label class="btn btn-outline-danger" for="edit-risk-no-text">No</label>
                         </div>
 
@@ -174,14 +175,60 @@
                             <button class="btn btn-primary w-100 fw-light" id="edit-user-trip" type="submit">Save
                                 Changes</button>
                         </div>
-                        
+
                     </form>
                     <div class="col-12 my-3">
                         <button class="btn btn-danger w-100 fw-light" id="delete-user-trip">Delete Trip</button>
                     </div>
                 </div>
                 <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal"
+                        data-bs-target="#savePdf">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
+                            <path fill="currentColor"
+                                d="M19 8h-1V3H6v5H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zM8 5h8v3H8V5zm8 14H8v-4h8v4zm2-4v-2H6v2H4v-4c0-.55.45-1 1-1h14c.55 0 1 .45 1 1v4h-2z" />
+                            <circle cx="18" cy="11.5" r="1" fill="currentColor" />
+                        </svg>
+                    </button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Print pdf-->
+    <div class="modal fade" id="savePdf" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="savePdfLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="savePdfLabel">Save trip detail as pdf</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="trip-detail-body">
+                    <div id="template-trip-pdf">
+                        <div id="trip-detail-text">
+                            <p>Trip Title: <span id="print-title"></span></p>
+                            <p>Destination: <span id="print-destination"></span></p>
+                            <p>Date Start: <span id="print-date"></span></p>
+                            <p>Risk Assesment: <span id="print-risk"></span></p>
+                            <p>Emergency Contact: <span id="print-emergency-contact"></span></p>
+                            <p>Contact Relationship: <span id="print-contact-relationship"></span></p>
+                            <p>Description: <span id="print-desc"></span></p>
+                        </div>
+                        <div id="expenses-detail-text">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" id="save-trip-pdf">
+                        Save
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
+                            <path fill="currentColor"
+                                d="M19 8h-1V3H6v5H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zM8 5h8v3H8V5zm8 14H8v-4h8v4zm2-4v-2H6v2H4v-4c0-.55.45-1 1-1h14c.55 0 1 .45 1 1v4h-2z" />
+                            <circle cx="18" cy="11.5" r="1" fill="currentColor" />
+                        </svg>
+                    </button>
                 </div>
             </div>
         </div>
@@ -207,8 +254,7 @@
                         <div class="input-group mb-3">
                             <span class="input-group-text">Amount of the expenses($)</span>
                             <input id="text-amount-expense" type="text" pattern="[0-9]+(\.[0-9]+)?" inputmode="decimal"
-                                class="form-control" aria-label="" placeholder="100"
-                                aria-describedby="">
+                                class="form-control" aria-label="" placeholder="100" aria-describedby="">
                         </div>
                         <div class="input-group mb-3">
                             <span class="input-group-text">Current Date and Time</span>
@@ -253,9 +299,8 @@
                         </div>
                         <div class="input-group mb-3">
                             <span class="input-group-text">Amount of the expenses($)</span>
-                            <input id="edit-text-amount-expense" type="text" pattern="[0-9]*" inputmode="numeric"
-                                class="form-control" aria-label="" placeholder="100"
-                                aria-describedby="">
+                            <input id="edit-text-amount-expense" type="text" inputmode="numeric"
+                                class="form-control" aria-label="" placeholder="100" aria-describedby="">
                         </div>
                         <div class="input-group mb-3">
                             <span class="input-group-text">Current Date and Time</span>

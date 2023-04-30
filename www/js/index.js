@@ -41,8 +41,23 @@ function onSaveNewTripClicked() {
   // ensure input is validated
   // show error if it is not
   if (title === '' || destination === '' || start_date === '' || risk_assessment === '') {
-    showError("Fill in the required field.")
-    return
+    if (title === '') {
+      showError("Fill in the trip title.")
+      return
+    }
+    else if (destination === '') {
+      showError("Fill in the destination.")
+      return
+    }
+    else if (start_date === '') {
+      showError("Fill in the start date.")
+      return
+    }
+    else if (risk_assessment === '') {
+      showError("Choose the risk assessment option.")
+      return
+    }
+
   }
   else if (!isFinite(emergency_contact) || isNaN(parseFloat(emergency_contact)) && emergency_contact !== "") {
     showError("Use number only for emergency contact number")
@@ -189,8 +204,22 @@ function onUpdateTrip() {
   let edit_desc = $.trim($('#edit-desc-text').val())
   var trip_id_get = sessionStorage.getItem("tripid");
   if (edit_title === '' || edit_destination === '' || edit_start_date === '' || edit_risk_assessment === '') {
-    showError("Fill in the required field.")
-    return
+    if (edit_title === '') {
+      showError("Fill in the trip title.")
+      return
+    }
+    else if (edit_destination === '') {
+      showError("Fill in the destination.")
+      return
+    }
+    else if (edit_start_date === '') {
+      showError("Fill in the start date.")
+      return
+    }
+    else if (edit_risk_assessment === '') {
+      showError("Choose the risk assessment option.")
+      return
+    }
   }
   else if (!isFinite(edit_emergency_contact) || isNaN(parseFloat(edit_emergency_contact)) && emergency_contact !== "") {
     showError("Use number only for emergency contact number")
@@ -242,6 +271,16 @@ function onShowDetailTrip() {
             $('#get_contact_relationship').text(` (${result.rows.item(0).contactnum_relationship})`)
             $('#get_desc').text(`Description: ${result.rows.item(0).trip_desc}`)
             $('#get_date_start').text(`Date Start: ${result.rows.item(0).trip_start_date}`)
+
+            $('#print-title').text(`${result.rows.item(0).trip_title}`)
+            $('#print-destination').text(`${result.rows.item(0).destination_name}`)
+            $('#print-date').text(`${result.rows.item(0).trip_start_date}`)
+            $('#print-risk').text(`${result.rows.item(0).risk_assessment_trip}`)
+            $('#print-emergency-contact').text(`${result.rows.item(0).emergency_contact}`)
+            $('#print-contact-relationship').text(`${result.rows.item(0).contactnum_relationship}`)
+            $('#print-desc').text(`${result.rows.item(0).trip_desc}`)
+
+
           }
 
         },
@@ -430,29 +469,29 @@ function onShowTwoTrip() {
 }
 
 
-function onShowSearchResult(tripkeyword,searchcategory) {
+function onShowSearchResult(tripkeyword, searchcategory) {
   if (!isDbReady) {
     showError('Database not ready. Please try again later.')
     return
   }
 
   let SQL_SELECT_SEARCH = '';
-  if(searchcategory === 'search-trip'){
-    SQL_SELECT_SEARCH  = SQL_SELECT_SEARCH_TRIPTITLE;
+  if (searchcategory === 'search-trip') {
+    SQL_SELECT_SEARCH = SQL_SELECT_SEARCH_TRIPTITLE;
   }
-  else if(searchcategory === 'search-destination') {
-    SQL_SELECT_SEARCH  = SQL_SELECT_SEARCH_DESTINATION;
+  else if (searchcategory === 'search-destination') {
+    SQL_SELECT_SEARCH = SQL_SELECT_SEARCH_DESTINATION;
   }
-  else if(searchcategory === 'search-date-start') {
-    SQL_SELECT_SEARCH  = SQL_SELECT_SEARCH_START_DATE;
+  else if (searchcategory === 'search-date-start') {
+    SQL_SELECT_SEARCH = SQL_SELECT_SEARCH_START_DATE;
   }
-  else{
-    SQL_SELECT_SEARCH  = SQL_SELECT_SEARCH_ALL;
+  else {
+    SQL_SELECT_SEARCH = SQL_SELECT_SEARCH_ALL;
   }
-  if(tripkeyword && tripkeyword.trim() !== '' 
-  && searchcategory === 'search-trip' 
-  || searchcategory === 'search-destination' 
-  || searchcategory === 'search-date-start') {
+  if (tripkeyword && tripkeyword.trim() !== ''
+    && searchcategory === 'search-trip'
+    || searchcategory === 'search-destination'
+    || searchcategory === 'search-date-start') {
     db.transaction(
       function (tx) {
         tx.executeSql(
@@ -478,7 +517,7 @@ function onShowSearchResult(tripkeyword,searchcategory) {
               var card = $('<div>', {
                 'class': 'card card-trip-app mx-3 my-4 position-relative'
               });
-  
+
               // Create the card header element and add it to the card
               var cardHeader = $('<div>', {
                 'class': 'card-header'
@@ -489,13 +528,13 @@ function onShowSearchResult(tripkeyword,searchcategory) {
                   'value': `${result.rows.item(index).trip_id}`
                 }));
               card.append(cardHeader);
-  
+
               // Create the card body element and add it to the card
               var cardBody = $('<div>', {
                 'class': 'card-body'
               });
               card.append(cardBody);
-  
+
               // Create the blockquote element and add it to the card body
               var blockquote = $('<blockquote>', {
                 'class': 'blockquote mb-0'
@@ -504,7 +543,7 @@ function onShowSearchResult(tripkeyword,searchcategory) {
                   'class': 'blockquote-footer'
                 }).text(`Date Start: ${result.rows.item(index).trip_start_date}`));
               cardBody.append(blockquote);
-  
+
               // Create the link element and add its to the card body
               var button = $('<button>', {
                 'class': 'stretched-link hidden-btn-app'
@@ -512,12 +551,12 @@ function onShowSearchResult(tripkeyword,searchcategory) {
                 sessionStorage.setItem('tripid', `${result.rows.item(index).trip_id}`);
                 window.open("edit_trip.html");
               });
-  
+
               cardBody.append(button);
-  
+
               // Append the card to the card container element
               $('#cardContainer').append(card);
-  
+
             }
           },
           function (tx, error) { showError('Failed to search selected categoy.') }
@@ -553,7 +592,7 @@ function onShowSearchResult(tripkeyword,searchcategory) {
               var card = $('<div>', {
                 'class': 'card card-trip-app mx-3 my-4 position-relative'
               });
-  
+
               // Create the card header element and add it to the card
               var cardHeader = $('<div>', {
                 'class': 'card-header'
@@ -564,13 +603,13 @@ function onShowSearchResult(tripkeyword,searchcategory) {
                   'value': `${result.rows.item(index).trip_id}`
                 }));
               card.append(cardHeader);
-  
+
               // Create the card body element and add it to the card
               var cardBody = $('<div>', {
                 'class': 'card-body'
               });
               card.append(cardBody);
-  
+
               // Create the blockquote element and add it to the card body
               var blockquote = $('<blockquote>', {
                 'class': 'blockquote mb-0'
@@ -579,7 +618,7 @@ function onShowSearchResult(tripkeyword,searchcategory) {
                   'class': 'blockquote-footer'
                 }).text(`Date Start: ${result.rows.item(index).trip_start_date}`));
               cardBody.append(blockquote);
-  
+
               // Create the link element and add its to the card body
               var button = $('<button>', {
                 'class': 'stretched-link hidden-btn-app'
@@ -587,12 +626,12 @@ function onShowSearchResult(tripkeyword,searchcategory) {
                 sessionStorage.setItem('tripid', `${result.rows.item(index).trip_id}`);
                 window.open("edit_trip.html");
               });
-  
+
               cardBody.append(button);
-  
+
               // Append the card to the card container element
               $('#cardContainer').append(card);
-  
+
             }
           },
           function (tx, error) { showError('Failed to search all category.') }
@@ -602,7 +641,7 @@ function onShowSearchResult(tripkeyword,searchcategory) {
       function () { }
     )
   }
-  else{
+  else {
     onShowAllTrip()
   }
 }
@@ -625,8 +664,18 @@ function onSaveNewExpensesClicked() {
   // ensure input is validated
   // show error if it is not
   if (type === '' || amount_spent === '' || current_timedate === '') {
-    showError("Fill in the required field.")
-    return
+    if (type === '') {
+      showError("Fill in the expense type.")
+      return
+    }
+    else if (amount_spent === '') {
+      showError("Fill in the amount spent.")
+      return
+    }
+    else if (current_timedate === '') {
+      showError("Click on the current timedate input.")
+      return
+    }
   }
   else if (!isFinite(amount_spent) || isNaN(parseFloat(amount_spent))) {
     showError("Can use number and dot symbol only")
@@ -786,10 +835,21 @@ function onShowAllExpenses() {
             // Append the card to the main container
             $('#CardExpensesContainer').append(card);
 
+            // <li class="list-group-item">An item - Spent:$20 -date-</li>
 
+            let card_list_expenses = `
+            <div class="card mb-2" style="width: 18rem;">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item bg-primary-subtle bg-gradient">${result.rows.item(index).expense_type}</li>
+                    <li class="list-group-item">Spent: $${result.rows.item(index).money_spent}</li>
+                    <li class="list-group-item">-${result.rows.item(index).time_record}-</li>
+                </ul>
+            </div>
+            `
 
+            $('#expenses-detail-text').append(card_list_expenses);
           }
-          
+
         },
         function (tx, error) { showError('Failed to show expenses.') }
       )
@@ -815,11 +875,21 @@ function onUpdateExpenses() {
   // ensure input is validated
   // show error if it is not
   if (type === '' || amount_spent === '' || current_timedate === '') {
-    showError("Fill in the required field.")
-    return
+    if (type === '') {
+      showError("Fill in the expense type.")
+      return
+    }
+    else if (amount_spent === '') {
+      showError("Fill in the amount spent.")
+      return
+    }
+    else if (current_timedate === '') {
+      showError("Click on the current timedate input.")
+      return
+    }
   }
   else if (!isFinite(amount_spent) || isNaN(parseFloat(amount_spent))) {
-    showError("Can use number and dot symbol only")
+    showError("Use whole number or decimal number only for amount spent")
     return
   }
 
@@ -853,7 +923,7 @@ function onShowDetailExpenses() {
     function (tx) {
       tx.executeSql(
         SQL_SELECT_ONE_EXPENSES,
-        [trip_id_get,expense_id_get],
+        [trip_id_get, expense_id_get],
         function (tx, result) {
           if (result.rows.length > 0) {
             $('#edit-text-expense-type').val(`${result.rows.item(0).expense_type}`)
@@ -942,6 +1012,73 @@ function onDeleteTrip_AllExpenses() {
 }
 
 
+function onSaveTripPdf() {
+  let template_trip = $('#trip-detail-body').html();
+  let options = {
+    documentSize: 'A4',
+    type: 'share',
+    fileName: 'mytrip.pdf'
+  }
+  pdf.fromData(`<html> 
+  <head>
+  <style>
+  #template-trip-pdf {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+  }
+  
+  #trip-detail-text {
+    background-color: #f7f7f7;
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 20px;
+    font-size: 16px;
+    color: #333;
+  }
+  
+  #trip-detail-text p {
+    margin: 0;
+    line-height: 1.5;
+  }
+  
+  #expenses-detail-text .card {
+    border: none;
+    box-shadow: none;
+    background-color: #f7f7f7;
+  }
+  
+  #expenses-detail-text .card .list-group-item:first-child {
+    background-color: #f2f2f2;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  #expenses-detail-text .card .list-group-item {
+    border-top: none;
+    padding: 10px;
+    font-size: 14px;
+    color: #666;
+  }
+  
+  #expenses-detail-text .card .list-group-item:last-child {
+    border-bottom: none;
+  }
+  
+  #expenses-detail-text .card .list-group-item.bg-primary-subtle {
+    background-color: #e6f0ff;
+    color: #007bff;
+  }
+  
+  #expenses-detail-text .card .list-group-item.bg-gradient {
+    background: linear-gradient(to bottom, #e6f0ff 0%, #dcecff 100%);
+  }
+  ul{
+    list-style-type: none;
+  }
+</style>
+  </head><body>${template_trip}</body></html>`, options)
+}
+
 function showError(message) {
   navigator.vibrate(2000)
   navigator.notification.beep(1)
@@ -950,18 +1087,19 @@ function showError(message) {
 
 document.addEventListener('deviceready', function () {
   Zepto(function ($) {
+    $('#save-trip-pdf').on('click', onSaveTripPdf)
     $('#add-user-trip').on('click', onSaveNewTripClicked)
     $('#edit-user-trip').on('click', onUpdateTrip)
     $('#delete-user-trip').on('click', onDeleteTrip_AllExpenses)
     $('#delete-all-user-trip').on('click', onDeleteAllExpenses)
-    $('#trip-search').on('input', function(){
+    $('#trip-search').on('input', function () {
       $('#cardContainer').empty();
       let trip_keyword = $(this).val();
       let search_category = $('input[name=radio-search]:checked').val();
       onShowSearchResult(trip_keyword, search_category);
     })
 
-    $('input[name=radio-search]').on('change', function(){
+    $('input[name=radio-search]').on('change', function () {
       $('#cardContainer').empty();
       let trip_keyword = $('#trip-search').val();
       let search_category = $(this).val();
