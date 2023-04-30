@@ -19,6 +19,8 @@ const SQL_INSERT_NEW_EXPENSES = 'INSERT INTO user_expenses(trip_id, expense_type
 const SQL_SELECT_ALL_EXPENSES = 'SELECT * FROM user_expenses WHERE trip_id = ? ORDER BY time_record DESC';
 const SQL_SELECT_ONE_EXPENSES = 'SELECT * FROM user_expenses WHERE trip_id = ? AND expense_id = ?';
 const SQL_DELETE_ONE_EXPENSES = 'DELETE FROM user_expenses WHERE trip_id = ? AND expense_id = ?'
+const SQL_DELETE_ALL_EXPENSES_ONE_TRIP = 'DELETE FROM user_expenses WHERE trip_id = ?'
+const SQL_DELETE_ALL_EXPENSES = 'DELETE FROM user_expenses'
 const SQL_UPDATE_ONE_EXPENSES = 'UPDATE user_expenses SET expense_type=?, money_spent=?, time_record=?, comment_expense=? WHERE trip_id = ? AND expense_id = ?'
 const SQL_SELECT_TOTAL_EXPENSES = 'SELECT SUM(money_spent) AS result_expenses FROM user_expenses WHERE trip_id = ?;';
 
@@ -265,9 +267,11 @@ function onDeleteAllTrip() {
         function (tx, result) {
           onShowAllTrip()
           history.back();
+          onDeleteAllExpenses();
         },
         function (tx, error) { showError('Failed to delete all trip.') }
       )
+
     },
     function (error) { },
     function () { }
@@ -408,11 +412,8 @@ function onShowTwoTrip() {
 
             // Create the link element and add its to the card body
             var button = $('<button>', {
-              'class': 'stretched-link hidden-btn-app'
-            }).on('click', function () {
-              sessionStorage.setItem('tripid', `-`);
-              window.open("edit_trip.html");
-            });
+              'class': 'hidden-btn-app'
+            })
 
             cardBody.append(button);
 
@@ -894,6 +895,53 @@ function onDeleteExpense() {
   )
 }
 
+function onDeleteAllExpenses() {
+  if (!isDbReady) {
+    showError('Database not ready. Please try again later')
+    return
+  }
+
+  db.transaction(
+    function (tx) {
+      tx.executeSql(
+        SQL_DELETE_ALL_EXPENSES,
+        [],
+        function (tx, result) {
+          onDeleteAllTrip()
+        },
+        function (tx, error) { showError('Failed to delete all expenses.') }
+      )
+
+    },
+    function (error) { },
+    function () { }
+  )
+}
+
+function onDeleteTrip_AllExpenses() {
+  if (!isDbReady) {
+    showError('Database not ready. Please try again later')
+    return
+  }
+
+  var trip_id_get = sessionStorage.getItem("tripid");
+  db.transaction(
+    function (tx) {
+      tx.executeSql(
+        SQL_DELETE_ALL_EXPENSES_ONE_TRIP,
+        [trip_id_get],
+        function (tx, result) { //clear ui
+          onDeleteTrip()
+        },
+        function (tx, error) { showError('Failed to clear expenses trip.') }
+      )
+    },
+    function (error) { },
+    function () { }
+  )
+}
+
+
 function showError(message) {
   navigator.vibrate(2000)
   navigator.notification.beep(1)
@@ -904,8 +952,8 @@ document.addEventListener('deviceready', function () {
   Zepto(function ($) {
     $('#add-user-trip').on('click', onSaveNewTripClicked)
     $('#edit-user-trip').on('click', onUpdateTrip)
-    $('#delete-user-trip').on('click', onDeleteTrip)
-    $('#delete-all-user-trip').on('click', onDeleteAllTrip)
+    $('#delete-user-trip').on('click', onDeleteTrip_AllExpenses)
+    $('#delete-all-user-trip').on('click', onDeleteAllExpenses)
     $('#trip-search').on('input', function(){
       $('#cardContainer').empty();
       let trip_keyword = $(this).val();
